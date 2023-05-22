@@ -1,8 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient'
 import { Text, StyleSheet, View, TextInput, Image, TouchableOpacity, SafeAreaView, Pressable } from 'react-native'
 import { Feather } from '@expo/vector-icons'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import WhiteButton from '../buttons/white_button'
+import firebaseapp from '../../FirebaseConfig'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+
 // import { useFonts } from 'expo-font';
 // import * as SplashScreen from 'expo-splash-screen';
 // SplashScreen.preventAutoHideAsync();
@@ -22,6 +25,10 @@ function LoginPage({ navigation }: { navigation: any }) {
   // if (!fontsLoaded) {
   //   return null
   // }
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState('')
+  const auth = getAuth(firebaseapp)
+
   return (
     <LinearGradient
       colors={['#02A7F0', '#0063A7']}
@@ -65,14 +72,29 @@ function LoginPage({ navigation }: { navigation: any }) {
         <View style={{ flex: 2, alignContent: 'center' }}>
           <Text style={[{ textAlign: 'center', color: 'white', fontSize: 24 }]}>Đăng nhập</Text>
 
-          <TextInput style={styles.input} placeholder='Nhập email' />
+          <TextInput style={styles.input} placeholder='Nhập email' onChangeText={(Text) => setEmail(Text)} />
 
-          <TextInput style={styles.input} placeholder='Nhập mật khẩu' />
+          <TextInput style={styles.input} placeholder='Nhập mật khẩu' onChangeText={(Text) => setPassword(Text)} />
         </View>
 
         <View style={{ flex: 4, justifyContent: 'center', alignItems: 'center' }}>
           <View style={{ width: '65%' }}>
-            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+            <TouchableOpacity
+              onPress={() => {
+                signInWithEmailAndPassword(auth, email, password)
+                  .then((userCredential) => {
+                    // Signed in
+                    const user = userCredential.user
+                    console.log(user)
+                    // ...
+                  })
+                  .catch((error) => {
+                    const errorCode = error.code
+                    const errorMessage = error.message
+                    console.log(errorMessage)
+                  })
+              }}
+            >
               <WhiteButton text={'Đăng nhập'} />
             </TouchableOpacity>
 

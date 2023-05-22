@@ -1,6 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient'
 import { Text, StyleSheet, View, TextInput, Image, TouchableOpacity, SafeAreaView } from 'react-native'
-
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { useState } from 'react'
+import firebaseapp from '../../FirebaseConfig'
 // import { useCallback } from 'react';
 // import { useFonts } from 'expo-font';
 // import * as SplashScreen from 'expo-splash-screen';
@@ -21,7 +23,22 @@ function RegisterPage({ navigation }: { navigation: any }) {
   // if (!fontsLoaded) {
   //   return null
   // }
-
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState('')
+  const auth = getAuth(firebaseapp)
+  const handleSignUp = () => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code
+        const errorMessage = error.message
+        // ..
+      })
+  }
   return (
     <LinearGradient
       colors={['#02A7F0', '#0063A7']}
@@ -65,9 +82,14 @@ function RegisterPage({ navigation }: { navigation: any }) {
         <View style={{ flex: 2, alignContent: 'center' }}>
           <Text style={[{ textAlign: 'center', color: 'white', fontSize: 24 }]}>Đăng ký</Text>
 
-          <TextInput style={styles.input} placeholder='Nhập email' />
+          <TextInput style={styles.input} placeholder='Nhập email' onChangeText={(Text) => setEmail(Text)} />
 
-          <TextInput style={styles.input} placeholder='Nhập mật khẩu' secureTextEntry={true} />
+          <TextInput
+            style={styles.input}
+            placeholder='Nhập mật khẩu'
+            secureTextEntry={true}
+            onChangeText={(Text) => setPassword(Text)}
+          />
 
           <TextInput style={styles.input} placeholder='Nhập lại mật khẩu' />
 
@@ -80,6 +102,7 @@ function RegisterPage({ navigation }: { navigation: any }) {
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => {
+              handleSignUp()
               navigation.navigate('LoginPage')
             }}
           >
