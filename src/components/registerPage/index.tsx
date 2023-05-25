@@ -29,14 +29,14 @@ function RegisterPage({ navigation }: { navigation: any }) {
   const auth = getAuth(firebaseapp)
   const handleSignUpAndCreateUserData = async () => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      const userId = user.uid;
-  
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+      const userId = user.uid
+
       const db = initializeFirestore(firebaseapp, {
-        experimentalForceLongPolling: true,
-      });
-      const docRef = doc(collection(db, "data"), userId);
+        experimentalForceLongPolling: true
+      })
+      const docRef = doc(collection(db, 'data'), userId)
       await setDoc(docRef, {
         MienPhi: 3,
         QuyDoi: 3,
@@ -45,21 +45,21 @@ function RegisterPage({ navigation }: { navigation: any }) {
         Phuc: 0,
         Coins: 0,
         BucketHat: 0,
-        Jacket: 0, 
+        Jacket: 0,
         ToteBag: 0,
-        Tumbler: 0, 
-        AirpodCase: 0, 
+        Tumbler: 0,
+        AirpodCase: 0,
         ElectronicLunchBo: 0,
         PortableSpeaker: 0
-      });
-      console.log("New user created with ID: ", userId);
-      console.log("Document written with ID: ", docRef.id);
+      })
+      console.log('New user created with ID: ', userId)
+      console.log('Document written with ID: ', docRef.id)
     } catch (error: any) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.error("Error creating user: ", errorMessage);
+      const errorCode = error.code
+      const errorMessage = error.message
+      console.error('Error creating user: ', errorMessage)
     }
-  };
+  }
   return (
     <LinearGradient
       colors={['#02A7F0', '#0063A7']}

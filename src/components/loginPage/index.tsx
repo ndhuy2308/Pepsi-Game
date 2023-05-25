@@ -5,28 +5,27 @@ import { useCallback, useState } from 'react'
 import WhiteButton from '../buttons/white_button'
 import firebaseapp from '../../FirebaseConfig'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
-import { useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux'
 import { updateDataField } from '../../store/userDataSlice'
 import { initializeFirestore, doc, getDoc, collection } from 'firebase/firestore'
 import { DataState } from '../../types'
 
 function LoginPage({ navigation }: { navigation: any }) {
-
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState('')
   const auth = getAuth(firebaseapp)
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   const db = initializeFirestore(firebaseapp, {
-    experimentalForceLongPolling: true,
-  });
+    experimentalForceLongPolling: true
+  })
 
   const handleUpdateUserData = async () => {
-    const docRef = doc(db, "data", "uzSnMdCB17ZQUxlXEZzOZ23LLDw1");
-    const docSnap = await getDoc(docRef);
+    const docRef = doc(db, 'data', 'uzSnMdCB17ZQUxlXEZzOZ23LLDw1')
+    const docSnap = await getDoc(docRef)
 
     if (docSnap.exists()) {
       const temp = JSON.stringify(docSnap.data())
-      const data:DataState = JSON.parse(temp)
+      const data: DataState = JSON.parse(temp)
       console.log(data.AirpodCase)
       await dispatch(updateDataField({ fieldName: 'MienPhi', payload: data.MienPhi }))
       await dispatch(updateDataField({ fieldName: 'QuyDoi', payload: data.QuyDoi }))
@@ -42,13 +41,10 @@ function LoginPage({ navigation }: { navigation: any }) {
       await dispatch(updateDataField({ fieldName: 'ElectronicLunchBo', payload: data.ElectronicLunchBo }))
       await dispatch(updateDataField({ fieldName: 'PortableSpeaker', payload: data.PortableSpeaker }))
       await navigation.navigate('Home')
-
     } else {
       // docSnap.data() will be undefined in this case
-      console.log("No such document!");
+      console.log('No such document!')
     }
-
-    
   }
 
   return (
@@ -102,7 +98,7 @@ function LoginPage({ navigation }: { navigation: any }) {
         <View style={{ flex: 4, justifyContent: 'center', alignItems: 'center' }}>
           <View style={{ width: '65%' }}>
             <TouchableOpacity
-              onPress={ async () => {
+              onPress={async () => {
                 signInWithEmailAndPassword(auth, email, password)
                   .then((userCredential) => {
                     // Signed in
@@ -115,9 +111,7 @@ function LoginPage({ navigation }: { navigation: any }) {
                     const errorMessage = error.message
                     console.log(errorMessage)
                   })
-                  
-                  
-                }}
+              }}
             >
               <WhiteButton text={'Đăng nhập'} />
             </TouchableOpacity>

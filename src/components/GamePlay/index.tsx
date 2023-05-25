@@ -2,11 +2,11 @@ import { LinearGradient } from 'expo-linear-gradient'
 import React, { useRef } from 'react'
 import { StyleSheet, View, Image, Animated, PanResponder, Text } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useSelector } from 'react-redux';
-import { DataState } from '../../store/userDataSlice';
+import { useSelector } from 'react-redux'
+import { DataState } from '../../store/userDataSlice'
 
 export default function Gameplay({ navigation }: { navigation: any }) {
-  const userData = useSelector((state: DataState) => state.MienPhi);
+  const userData = useSelector((state: DataState) => state.MienPhi)
   console.log('Homepage: ', userData)
 
   const pan = useRef(new Animated.ValueXY()).current
