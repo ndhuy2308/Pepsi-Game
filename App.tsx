@@ -8,10 +8,15 @@ import RegisterPage from './src/components/registerPage'
 import Gameplay from './src/components/GamePlay'
 import Result from './src/components/GamePlay/result'
 import QrPage from './src/components/qrPage'
-const Stack = createStackNavigator()
+import store from './src/store/store'
+import { Provider } from 'react-redux';
 
-export default function App() {
+const Stack = createStackNavigator()
+export default function App({ navigation }: { navigation: any }) {
+
+
   return (
+    <Provider store={store}>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name='RegisterPage' component={RegisterPage} />
@@ -22,5 +27,7 @@ export default function App() {
         <Stack.Screen name='QrPage' component={QrPage} />
       </Stack.Navigator>
     </NavigationContainer>
+    </Provider>
   )
 }
+

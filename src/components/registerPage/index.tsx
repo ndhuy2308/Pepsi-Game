@@ -3,6 +3,7 @@ import { Text, StyleSheet, View, TextInput, Image, TouchableOpacity, SafeAreaVie
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import { useState } from 'react'
 import firebaseapp from '../../FirebaseConfig'
+import { doc, collection, initializeFirestore, setDoc } from 'firebase/firestore'
 // import { useCallback } from 'react';
 // import { useFonts } from 'expo-font';
 // import * as SplashScreen from 'expo-splash-screen';
@@ -26,19 +27,39 @@ function RegisterPage({ navigation }: { navigation: any }) {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState('')
   const auth = getAuth(firebaseapp)
-  const handleSignUp = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user
-        // ...
-      })
-      .catch((error) => {
-        const errorCode = error.code
-        const errorMessage = error.message
-        // ..
-      })
-  }
+  const handleSignUpAndCreateUserData = async () => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const userId = user.uid;
+  
+      const db = initializeFirestore(firebaseapp, {
+        experimentalForceLongPolling: true,
+      });
+      const docRef = doc(collection(db, "data"), userId);
+      await setDoc(docRef, {
+        MienPhi: 3,
+        QuyDoi: 3,
+        An: 0,
+        Loc: 0,
+        Phuc: 0,
+        Coins: 0,
+        BucketHat: 0,
+        Jacket: 0, 
+        ToteBag: 0,
+        Tumbler: 0, 
+        AirpodCase: 0, 
+        ElectronicLunchBo: 0,
+        PortableSpeaker: 0
+      });
+      console.log("New user created with ID: ", userId);
+      console.log("Document written with ID: ", docRef.id);
+    } catch (error: any) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error("Error creating user: ", errorMessage);
+    }
+  };
   return (
     <LinearGradient
       colors={['#02A7F0', '#0063A7']}
@@ -102,7 +123,7 @@ function RegisterPage({ navigation }: { navigation: any }) {
           <TouchableOpacity
             activeOpacity={0.5}
             onPress={() => {
-              handleSignUp()
+              handleSignUpAndCreateUserData()
               navigation.navigate('LoginPage')
             }}
           >

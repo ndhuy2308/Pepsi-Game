@@ -5,29 +5,51 @@ import { useCallback, useState } from 'react'
 import WhiteButton from '../buttons/white_button'
 import firebaseapp from '../../FirebaseConfig'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
-
-// import { useFonts } from 'expo-font';
-// import * as SplashScreen from 'expo-splash-screen';
-// SplashScreen.preventAutoHideAsync();
+import { useDispatch } from 'react-redux';
+import { updateDataField } from '../../store/userDataSlice'
+import { initializeFirestore, doc, getDoc, collection } from 'firebase/firestore'
+import { DataState } from '../../types'
 
 function LoginPage({ navigation }: { navigation: any }) {
-  // const [fontsLoaded] = useFonts({
-  //   SwissLight: require('./assets/fonts/swissLight.ttf'),
-  //   SwissBold: require('./assets/fonts/swissBold.ttf'),
-  // })
 
-  // const onLayoutRootView = useCallback(async () => {
-  //   if (fontsLoaded) {
-  //     await SplashScreen.hideAsync()
-  //   }
-  // }, [fontsLoaded])
-
-  // if (!fontsLoaded) {
-  //   return null
-  // }
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState('')
   const auth = getAuth(firebaseapp)
+  const dispatch = useDispatch();
+  const db = initializeFirestore(firebaseapp, {
+    experimentalForceLongPolling: true,
+  });
+
+  const handleUpdateUserData = async () => {
+    const docRef = doc(db, "data", "uzSnMdCB17ZQUxlXEZzOZ23LLDw1");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const temp = JSON.stringify(docSnap.data())
+      const data:DataState = JSON.parse(temp)
+      console.log(data.AirpodCase)
+      await dispatch(updateDataField({ fieldName: 'MienPhi', payload: data.MienPhi }))
+      await dispatch(updateDataField({ fieldName: 'QuyDoi', payload: data.QuyDoi }))
+      await dispatch(updateDataField({ fieldName: 'An', payload: data.An }))
+      await dispatch(updateDataField({ fieldName: 'Loc', payload: data.Loc }))
+      await dispatch(updateDataField({ fieldName: 'Phuc', payload: data.Phuc }))
+      await dispatch(updateDataField({ fieldName: 'Coins', payload: data.Coins }))
+      await dispatch(updateDataField({ fieldName: 'BucketHat', payload: data.BucketHat }))
+      await dispatch(updateDataField({ fieldName: 'Jacket', payload: data.Jacket }))
+      await dispatch(updateDataField({ fieldName: 'ToteBag', payload: data.ToteBag }))
+      await dispatch(updateDataField({ fieldName: 'Tumbler', payload: data.Tumbler }))
+      await dispatch(updateDataField({ fieldName: 'AirpodCase', payload: data.AirpodCase }))
+      await dispatch(updateDataField({ fieldName: 'ElectronicLunchBo', payload: data.ElectronicLunchBo }))
+      await dispatch(updateDataField({ fieldName: 'PortableSpeaker', payload: data.PortableSpeaker }))
+      await navigation.navigate('Home')
+
+    } else {
+      // docSnap.data() will be undefined in this case
+      console.log("No such document!");
+    }
+
+    
+  }
 
   return (
     <LinearGradient
@@ -80,12 +102,12 @@ function LoginPage({ navigation }: { navigation: any }) {
         <View style={{ flex: 4, justifyContent: 'center', alignItems: 'center' }}>
           <View style={{ width: '65%' }}>
             <TouchableOpacity
-              onPress={() => {
+              onPress={ async () => {
                 signInWithEmailAndPassword(auth, email, password)
                   .then((userCredential) => {
                     // Signed in
                     const user = userCredential.user
-                    console.log(user)
+                    handleUpdateUserData()
                     // ...
                   })
                   .catch((error) => {
@@ -93,7 +115,9 @@ function LoginPage({ navigation }: { navigation: any }) {
                     const errorMessage = error.message
                     console.log(errorMessage)
                   })
-              }}
+                  
+                  
+                }}
             >
               <WhiteButton text={'Đăng nhập'} />
             </TouchableOpacity>

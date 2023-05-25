@@ -3,6 +3,9 @@ import { StyleSheet, Text, View, Image, SafeAreaView, TouchableOpacity } from 'r
 import { LinearGradient } from 'expo-linear-gradient'
 import WhiteButton from '../buttons/white_button'
 import ChoiNgay from '../buttons/choi_ngay'
+import { useSelector } from 'react-redux'
+import { DataState } from '../../types'
+
 export default function HomePage({ navigation }: { navigation: any }) {
   return (
     <LinearGradient
@@ -72,7 +75,7 @@ export default function HomePage({ navigation }: { navigation: any }) {
               />
               <Image style={styles.centerImage} source={require('../../../assets/images/buttons/choi-ngay-bh.png')} />
               <Text style={styles.buttonText}>Chơi ngay</Text>
-              <Text style={styles.buttonTextSmall}>Bạn có tổng cộng 5 lượt chơi</Text>
+              <Text style={styles.buttonTextSmall}>Bạn có tổng cộng lượt chơi</Text>
             </TouchableOpacity>
           </View>
 
