@@ -1,13 +1,25 @@
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { StyleSheet, View, Image, Animated, PanResponder, Text } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useSelector } from 'react-redux'
-import { DataState } from '../../store/userDataSlice'
-
+import { useDispatch, useSelector } from 'react-redux'
+import { UserData, updateData } from '../../store/userDataSlice'
+import { doc, collection, initializeFirestore, setDoc } from 'firebase/firestore'
+import { RootState } from '../../store/rootReducer'
+import firebaseapp from '../../FirebaseConfig'
 export default function Gameplay({ navigation }: { navigation: any }) {
-  const userData = useSelector((state: DataState) => state.MienPhi)
-  console.log('Homepage: ', userData)
+  const data: UserData = useSelector((state: RootState) => state.userData.data)
+  const dispatch = useDispatch()
+  const db = initializeFirestore(firebaseapp, {
+    experimentalForceLongPolling: true
+  })
+  const docRef = doc(collection(db, 'data'), data.UserID)
+
+  //xử lí dữ liệu chơi game
+  const MienPhi = data.MienPhi
+  const QuyDoi = data.QuyDoi
+  console.log('GamePlay', data.UserID)
+  //
 
   const pan = useRef(new Animated.ValueXY()).current
 
@@ -18,7 +30,6 @@ export default function Gameplay({ navigation }: { navigation: any }) {
     }),
     onPanResponderRelease: (e, gestureState) => {
       if (gestureState.moveY < 550) {
-        console.log('Giữa')
         navigation.navigate('Result')
       }
       Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver: false }).start()

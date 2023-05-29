@@ -1,12 +1,66 @@
 import { StatusBar } from 'expo-status-bar'
-import { StyleSheet, Text, View, Image, SafeAreaView, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, SafeAreaView, TouchableOpacity, Modal } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import WhiteButton from '../buttons/white_button'
 import ChoiNgay from '../buttons/choi_ngay'
-import { useSelector } from 'react-redux'
-import { DataState } from '../../types'
-
+import { useDispatch, useSelector } from 'react-redux'
+import { UserData, updateData } from '../../store/userDataSlice'
+import { RootState } from '../../store/rootReducer'
+import { useState } from 'react'
+import firebaseapp from '../../FirebaseConfig'
+import { doc, collection, initializeFirestore, setDoc } from 'firebase/firestore'
 export default function HomePage({ navigation }: { navigation: any }) {
+  const data: UserData = useSelector((state: RootState) => state.userData.data)
+  const [modalVisible, setModalVisible] = useState(false) // cho modal
+  const dispatch = useDispatch()
+  //db
+  const db = initializeFirestore(firebaseapp, {
+    experimentalForceLongPolling: true
+  })
+  const docRef = doc(collection(db, 'data'), data.UserID)
+
+  //xử lí dữ liệu chơi game
+  const MienPhi = data.MienPhi
+  const QuyDoi = data.QuyDoi
+
+  const Play = async (type: number) => {
+    //1 - miễn phí, 2 - quy đổi
+    dispatch(
+      updateData({
+        MienPhi: type === 1 && data.MienPhi > 0 ? data.MienPhi - 1 : data.MienPhi,
+        QuyDoi: type === 2 && data.QuyDoi > 0 ? data.QuyDoi - 1 : data.QuyDoi,
+        An: data.An,
+        Loc: data.Loc,
+        Phuc: data.Phuc,
+        Coins: data.Coins,
+        BucketHat: data.BucketHat,
+        Jacket: data.Jacket,
+        ToteBag: data.ToteBag,
+        Tumbler: data.Tumbler,
+        AirpodCase: data.AirpodCase,
+        ElectronicLunchBo: data.ElectronicLunchBo,
+        PortableSpeaker: data.PortableSpeaker,
+        UserID: data.UserID
+      })
+    )
+
+    await setDoc(docRef, {
+      MienPhi: type === 1 && data.MienPhi > 0 ? data.MienPhi - 1 : data.MienPhi,
+      QuyDoi: type === 2 && data.QuyDoi > 0 ? data.QuyDoi - 1 : data.QuyDoi,
+      An: data.An,
+      Loc: data.Loc,
+      Phuc: data.Phuc,
+      Coins: data.Coins,
+      BucketHat: data.BucketHat,
+      Jacket: data.Jacket,
+      ToteBag: data.ToteBag,
+      Tumbler: data.Tumbler,
+      AirpodCase: data.AirpodCase,
+      ElectronicLunchBo: data.ElectronicLunchBo,
+      PortableSpeaker: data.PortableSpeaker
+    })
+    navigation.navigate('Gameplay')
+  }
   return (
     <LinearGradient
       colors={['#02A7F0', '#0063A7']}
@@ -14,6 +68,36 @@ export default function HomePage({ navigation }: { navigation: any }) {
       end={{ x: 1, y: 0.5 }}
       style={{ flex: 1 }}
     >
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible)
+        }}
+      >
+        <View style={styles.modalView}>
+          <Text style={{ color: '#478449', fontSize: 22, paddingTop: 10 }}>BẠN MUỐN SỬ DỤNG LƯỢT CHƠI NÀO</Text>
+          <Text numberOfLines={0} style={{ color: '#1D1C1C', textAlign: 'center', fontSize: 15, padding: 10 }}></Text>
+          <View style={{ flexDirection: 'column', padding: 10 }}>
+            <TouchableOpacity
+              onPress={() => {
+                Play(1)
+              }}
+            >
+              <Text style={[{ color: 'black' }]}>Lượt chơi miễn phí {data.MienPhi}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                Play(2)
+              }}
+            >
+              <Text style={[{ color: 'black' }]}>Lượt chơi quy đổi {data.QuyDoi}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <Image
         source={require('../../../assets/images/homepage/goc-tren-trai.png')}
         style={{ flex: 1, position: 'absolute', top: 0, left: 0, zIndex: 0 }}
@@ -66,7 +150,7 @@ export default function HomePage({ navigation }: { navigation: any }) {
           <Text style={{ textAlign: 'center', color: '#FFDD00', fontSize: 18, fontWeight: 'bold' }}>Hướng dẫn</Text>
 
           <View style={{ padding: 5 }}>
-            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Gameplay')}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={() => setModalVisible(!modalVisible)}>
               <Image style={styles.bottomImage} source={require('../../../assets/images/buttons/cn-duoi.png')} />
               <Image style={styles.topImage} source={require('../../../assets/images/buttons/cn-tren.png')} />
               <Image
@@ -75,7 +159,7 @@ export default function HomePage({ navigation }: { navigation: any }) {
               />
               <Image style={styles.centerImage} source={require('../../../assets/images/buttons/choi-ngay-bh.png')} />
               <Text style={styles.buttonText}>Chơi ngay</Text>
-              <Text style={styles.buttonTextSmall}>Bạn có tổng cộng lượt chơi</Text>
+              <Text style={styles.buttonTextSmall}>Bạn có tổng cộng {MienPhi + QuyDoi} lượt chơi</Text>
             </TouchableOpacity>
           </View>
 
@@ -158,5 +242,20 @@ const styles = StyleSheet.create({
     paddingTop: 4,
     paddingBottom: 4,
     zIndex: 5
+  },
+  modalView: {
+    alignSelf: 'center',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    width: '90%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
   }
 })

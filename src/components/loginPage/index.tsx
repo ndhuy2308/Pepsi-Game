@@ -1,14 +1,16 @@
 import { LinearGradient } from 'expo-linear-gradient'
 import { Text, StyleSheet, View, TextInput, Image, TouchableOpacity, SafeAreaView, Pressable } from 'react-native'
 import { Feather } from '@expo/vector-icons'
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect, useContext } from 'react'
 import WhiteButton from '../buttons/white_button'
 import firebaseapp from '../../FirebaseConfig'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
-import { useDispatch } from 'react-redux'
-import { updateDataField } from '../../store/userDataSlice'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { RootState } from '../../store/rootReducer'
+import { UserData, updateData } from '../../store/userDataSlice'
+
 import { initializeFirestore, doc, getDoc, collection } from 'firebase/firestore'
-import { DataState } from '../../types'
 
 function LoginPage({ navigation }: { navigation: any }) {
   const [email, setEmail] = useState<string>('')
@@ -18,28 +20,33 @@ function LoginPage({ navigation }: { navigation: any }) {
   const db = initializeFirestore(firebaseapp, {
     experimentalForceLongPolling: true
   })
-
-  const handleUpdateUserData = async () => {
-    const docRef = doc(db, 'data', 'uzSnMdCB17ZQUxlXEZzOZ23LLDw1')
+  const handleUpdateUserData = async (id: string) => {
+    console.log(id)
+    const docRef = doc(db, 'data', id)
     const docSnap = await getDoc(docRef)
 
     if (docSnap.exists()) {
       const temp = JSON.stringify(docSnap.data())
-      const data: DataState = JSON.parse(temp)
-      console.log(data.AirpodCase)
-      await dispatch(updateDataField({ fieldName: 'MienPhi', payload: data.MienPhi }))
-      await dispatch(updateDataField({ fieldName: 'QuyDoi', payload: data.QuyDoi }))
-      await dispatch(updateDataField({ fieldName: 'An', payload: data.An }))
-      await dispatch(updateDataField({ fieldName: 'Loc', payload: data.Loc }))
-      await dispatch(updateDataField({ fieldName: 'Phuc', payload: data.Phuc }))
-      await dispatch(updateDataField({ fieldName: 'Coins', payload: data.Coins }))
-      await dispatch(updateDataField({ fieldName: 'BucketHat', payload: data.BucketHat }))
-      await dispatch(updateDataField({ fieldName: 'Jacket', payload: data.Jacket }))
-      await dispatch(updateDataField({ fieldName: 'ToteBag', payload: data.ToteBag }))
-      await dispatch(updateDataField({ fieldName: 'Tumbler', payload: data.Tumbler }))
-      await dispatch(updateDataField({ fieldName: 'AirpodCase', payload: data.AirpodCase }))
-      await dispatch(updateDataField({ fieldName: 'ElectronicLunchBo', payload: data.ElectronicLunchBo }))
-      await dispatch(updateDataField({ fieldName: 'PortableSpeaker', payload: data.PortableSpeaker }))
+      const data: UserData = JSON.parse(temp)
+      console.log(data.MienPhi)
+      await dispatch(
+        updateData({
+          MienPhi: data.MienPhi,
+          QuyDoi: data.QuyDoi,
+          An: data.An,
+          Loc: data.Loc,
+          Phuc: data.Phuc,
+          Coins: data.Coins,
+          BucketHat: data.BucketHat,
+          Jacket: data.Jacket,
+          ToteBag: data.ToteBag,
+          Tumbler: data.Tumbler,
+          AirpodCase: data.AirpodCase,
+          ElectronicLunchBo: data.ElectronicLunchBo,
+          PortableSpeaker: data.PortableSpeaker,
+          UserID: id
+        })
+      )
       await navigation.navigate('Home')
     } else {
       // docSnap.data() will be undefined in this case
@@ -103,7 +110,7 @@ function LoginPage({ navigation }: { navigation: any }) {
                   .then((userCredential) => {
                     // Signed in
                     const user = userCredential.user
-                    handleUpdateUserData()
+                    handleUpdateUserData(user.uid)
                     // ...
                   })
                   .catch((error) => {

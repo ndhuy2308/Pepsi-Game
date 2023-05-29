@@ -50,7 +50,8 @@ function RegisterPage({ navigation }: { navigation: any }) {
         Tumbler: 0,
         AirpodCase: 0,
         ElectronicLunchBo: 0,
-        PortableSpeaker: 0
+        PortableSpeaker: 0,
+        userId: userId
       })
       console.log('New user created with ID: ', userId)
       console.log('Document written with ID: ', docRef.id)
