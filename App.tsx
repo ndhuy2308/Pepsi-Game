@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import 'react-native-gesture-handler'
@@ -8,14 +8,36 @@ import RegisterPage from './src/components/registerPage'
 import Gameplay from './src/components/GamePlay'
 import Result from './src/components/GamePlay/result'
 import QrPage from './src/components/qrPage'
+import Collection from './src/components/Collection'
+import GiftPage from './src/components/giftPage'
 import store from './src/store/store'
 import { Provider } from 'react-redux'
+import { RootStackParamList } from './src/types'
+import { useFonts } from 'expo-font'
+import * as SplashScreen from 'expo-splash-screen'
 
-const Stack = createStackNavigator()
+SplashScreen.preventAutoHideAsync()
+
+const Stack = createStackNavigator<RootStackParamList>()
 export default function App({ navigation }: { navigation: any }) {
+  const [fontsLoaded] = useFonts({
+    SwissBold: require('./assets/fonts/UTM-Swiss-721-Black-Condensed.ttf'),
+    SwissLight: require('./assets/fonts/UTM-Swiss-Condensed.ttf')
+  })
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync()
+    }
+  }, [fontsLoaded])
+
+  if (!fontsLoaded) {
+    return null
+  }
+
   return (
     <Provider store={store}>
-      <NavigationContainer>
+      <NavigationContainer onReady={onLayoutRootView}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name='RegisterPage' component={RegisterPage} />
           <Stack.Screen name='LoginPage' component={LoginPage} />
@@ -23,6 +45,8 @@ export default function App({ navigation }: { navigation: any }) {
           <Stack.Screen name='Gameplay' component={Gameplay} />
           <Stack.Screen name='Result' component={Result} />
           <Stack.Screen name='QrPage' component={QrPage} />
+          <Stack.Screen name='Collection' component={Collection} />
+          <Stack.Screen name='GiftPage' component={GiftPage} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

@@ -4,18 +4,21 @@ import { View, StyleSheet, Text, Image } from 'react-native'
 interface propButton {
   text: string
   luotChoi: number
+  onPress: () => void
 }
 
-function ChoiNgay(props: propButton, { navigation }: { navigation: any }) {
+function RedBigButton(props: propButton, { navigation }: { navigation: any }) {
   return (
     <View style={{ padding: 5 }}>
-      <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate('Gameplay')}>
-        <Image style={styles.bottomImage} source={require('../../../assets/images/buttons/cn-duoi.png')} />
-        <Image style={styles.topImage} source={require('../../../assets/images/buttons/cn-tren.png')} />
+      <TouchableOpacity style={styles.buttonContainer} onPress={props.onPress}>
         <Image style={styles.redDotImage} source={require('../../../assets/images/buttons/choi-ngay-red-dot.png')} />
         <Image style={styles.centerImage} source={require('../../../assets/images/buttons/choi-ngay-bh.png')} />
         <Text style={styles.buttonText}>{props.text}</Text>
-        <Text style={styles.buttonTextSmall}>Bạn có tổng cộng {props.luotChoi} lượt chơi</Text>
+        <View style={{ flexDirection: 'row', zIndex: 5 }}>
+          <Text style={styles.buttonTextSmall}>Bạn còn </Text>
+          <Text style={{ fontFamily: 'SwissBold', color: '#FEEEA4', fontSize: 14 }}>{props.luotChoi}</Text>
+          <Text style={styles.buttonTextSmall}> lượt chơi</Text>
+        </View>
       </TouchableOpacity>
     </View>
   )
@@ -33,7 +36,8 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 60,
     zIndex: 1,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    alignItems: 'center'
   },
 
   topImage: {
@@ -45,7 +49,7 @@ const styles = StyleSheet.create({
   redDotImage: {
     position: 'absolute',
     top: 50,
-    zIndex: 3
+    zIndex: 999
   },
   centerImage: {
     position: 'absolute',
@@ -63,10 +67,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
     alignSelf: 'center',
-    fontWeight: 'bold',
+    fontFamily: 'SwissBold',
     fontSize: 18,
-    paddingLeft: 22,
-    paddingRight: 22,
     paddingTop: 4,
     paddingBottom: 4,
     zIndex: 5
@@ -75,14 +77,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
     alignSelf: 'center',
-    fontWeight: 'bold',
-    fontSize: 12,
-    paddingLeft: 22,
-    paddingRight: 22,
+    fontFamily: 'SwissLight',
+    fontSize: 10,
     paddingTop: 4,
     paddingBottom: 4,
     zIndex: 5
   }
 })
 
-export default ChoiNgay
+export default RedBigButton

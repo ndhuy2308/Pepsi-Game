@@ -62,23 +62,32 @@ function LoginPage({ navigation }: { navigation: any }) {
       style={{ flex: 1 }}
     >
       <Image
-        source={require('../../../assets/images/1.png')}
-        style={{ flex: 1, position: 'absolute', top: 0, left: 0 }}
-      />
-      <Image source={require('../../../assets/images/2.png')} style={{ position: 'absolute', top: 0, right: 0 }} />
-      <Image source={require('../../../assets/images/3.png')} style={{ position: 'absolute', bottom: 0, left: 0 }} />
-      <Image source={require('../../../assets/images/4.png')} style={{ position: 'absolute', bottom: 0, right: 0 }} />
-      <Image
-        source={require('../../../assets/images/hoa-trai.png')}
-        style={{ position: 'absolute', top: '23%', left: 0 }}
+        source={require('../../../assets/images/register/top_left.png')}
+        style={{ position: 'absolute', top: 0, left: 0 }}
       />
       <Image
-        source={require('../../../assets/images/hoa-phai.png')}
-        style={{ position: 'absolute', top: '60%', right: 0 }}
+        source={require('../../../assets/images/register/flower_top_left.png')}
+        style={{ position: 'absolute', top: '25.9%', left: 0 }}
       />
       <Image
-        source={require('../../../assets/images/hoa-duoi.png')}
-        style={{ position: 'absolute', top: '65%', left: 0 }}
+        source={require('../../../assets/images/register/flower_bottom_left.png')}
+        style={{ position: 'absolute', top: '62.1%', left: 0 }}
+      />
+      <Image
+        source={require('../../../assets/images/register/bottom_left.png')}
+        style={{ position: 'absolute', bottom: 0, left: 0 }}
+      />
+      <Image
+        source={require('../../../assets/images/register/top_right.png')}
+        style={{ position: 'absolute', top: 0, right: 0 }}
+      />
+      <Image
+        source={require('../../../assets/images/register/flower_bottom_right.png')}
+        style={{ position: 'absolute', top: '55%', right: 0 }}
+      />
+      <Image
+        source={require('../../../assets/images/register/bottom_right.png')}
+        style={{ position: 'absolute', bottom: 0, right: 0 }}
       />
       <SafeAreaView style={{ flex: 1, padding: 20 }}>
         <View
@@ -90,12 +99,14 @@ function LoginPage({ navigation }: { navigation: any }) {
             justifyContent: 'center'
           }}
         >
-          <Text style={[{ color: 'white', fontSize: 18 }]}>Hey, mừng bạn đến với</Text>
-          <Text style={[{ color: 'white', fontSize: 30 }]}>Pepsi Tết</Text>
+          <Text style={[{ color: 'white', fontSize: 18, fontFamily: 'SwissLight' }]}>Hey, mừng bạn đến với</Text>
+          <Text style={[{ color: 'white', fontSize: 30, fontFamily: 'SwissBold' }]}>Pepsi Tết</Text>
         </View>
 
         <View style={{ flex: 2, alignContent: 'center' }}>
-          <Text style={[{ textAlign: 'center', color: 'white', fontSize: 24 }]}>Đăng nhập</Text>
+          <Text style={[{ textAlign: 'center', color: 'white', fontSize: 24, fontFamily: 'SwissBold' }]}>
+            ĐĂNG NHẬP
+          </Text>
 
           <TextInput style={styles.input} placeholder='Nhập email' onChangeText={(Text) => setEmail(Text)} />
 
@@ -103,8 +114,9 @@ function LoginPage({ navigation }: { navigation: any }) {
         </View>
 
         <View style={{ flex: 4, justifyContent: 'center', alignItems: 'center' }}>
-          <View style={{ width: '65%' }}>
-            <TouchableOpacity
+          <View style={{ width: '60%' }}>
+            <WhiteButton
+              text='Đăng nhập'
               onPress={async () => {
                 signInWithEmailAndPassword(auth, email, password)
                   .then((userCredential) => {
@@ -119,13 +131,14 @@ function LoginPage({ navigation }: { navigation: any }) {
                     console.log(errorMessage)
                   })
               }}
-            >
-              <WhiteButton text={'Đăng nhập'} />
-            </TouchableOpacity>
+            />
 
-            <TouchableOpacity onPress={() => navigation.navigate('RegisterPage')}>
-              <WhiteButton text={'Đăng ký'} />
-            </TouchableOpacity>
+            <WhiteButton
+              text={'Đăng ký'}
+              onPress={() => {
+                navigation.navigate('RegisterPage')
+              }}
+            />
           </View>
         </View>
       </SafeAreaView>
@@ -136,6 +149,9 @@ function LoginPage({ navigation }: { navigation: any }) {
 const styles = StyleSheet.create({
   input: {
     backgroundColor: 'white',
+    fontFamily: 'SwissLight',
+    fontSize: 14,
+    color: '#2D2D2D',
     padding: 10,
     borderRadius: 8,
     marginTop: 20

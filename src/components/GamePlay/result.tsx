@@ -8,7 +8,13 @@ import { UserData, updateAn, updateData, updateLoc, updatePhuc } from '../../sto
 import { RootState } from '../../store/rootReducer'
 import { doc, collection, initializeFirestore, setDoc } from 'firebase/firestore'
 import firebaseapp from '../../FirebaseConfig'
-function Result({ navigation }: { navigation: any }) {
+import { StackScreenProps } from '@react-navigation/stack'
+import { RootStackParamList } from '../../types'
+
+type ResultScreenProps = StackScreenProps<RootStackParamList, 'Result'>
+function Result({ navigation, route }: ResultScreenProps) {
+  const { loai_r } = route.params
+  const type: number = Number(loai_r)
   const [randomText, setRandomText] = useState<string>('')
   const db = initializeFirestore(firebaseapp, {
     experimentalForceLongPolling: true
@@ -24,9 +30,9 @@ function Result({ navigation }: { navigation: any }) {
   console.log('Result: ', data.UserID)
   const docRef = doc(collection(db, 'data'), data.UserID)
   useEffect(() => {
-    const random: 'An' | 'Phúc' | 'Lộc' = randomValue()
-    setRandomText(random)
     const doUpdate = async () => {
+      const random: 'An' | 'Phúc' | 'Lộc' = randomValue()
+      setRandomText(random)
       dispatch(
         updateData({
           MienPhi: data.MienPhi,
@@ -81,14 +87,56 @@ function Result({ navigation }: { navigation: any }) {
     >
       <SafeAreaView style={{ flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center' }}>
         <Image
-          style={{ width: 142, height: 369 }}
-          source={randomText === 'An' ? { uri: imgAn } : randomText === 'Lộc' ? { uri: imgLoc } : { uri: imgPhuc }}
-        ></Image>
-        <Text>Chúc mừng bạn nhận được</Text>
-        <Text>Một lon {randomText === 'An' ? 'Pepsi AN' : randomText === 'Lộc' ? '7Up LỘC' : 'Mirinda PHÚC'}</Text>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text>Xác nhận</Text>
-        </TouchableOpacity>
+          source={require('../../../assets/images/gameplay/top_left.png')}
+          style={{ position: 'absolute', top: 0, left: 0 }}
+        />
+        <Image
+          source={require('../../../assets/images/gameplay/left_flower.png')}
+          style={{ position: 'absolute', top: '66%', left: 0 }}
+        />
+
+        <Image
+          source={require('../../../assets/images/gameplay/bottom_right.png')}
+          style={{ zIndex: 0, position: 'absolute', right: 0, bottom: 0 }}
+        />
+        <Image
+          source={require('../../../assets/images/gameplay/bottom_left.png')}
+          style={{ zIndex: 0, position: 'absolute', left: 0, bottom: 0 }}
+        />
+
+        <Image
+          source={require('../../../assets/images/gameplay/top_right.png')}
+          style={{ zIndex: 0, position: 'absolute', right: 0, top: 0 }}
+        />
+
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+          <Image
+            style={{ width: 142, height: 369 }}
+            source={randomText === 'An' ? { uri: imgAn } : randomText === 'Lộc' ? { uri: imgLoc } : { uri: imgPhuc }}
+          />
+          <View style={{ position: 'absolute', top: -50, right: -50, justifyContent: 'center', alignItems: 'center' }}>
+            <Image
+              style={{ width: 100, height: 100 }}
+              source={require('../../../assets/images/gameplay/circle_golden.png')}
+            />
+            <View
+              style={{ position: 'absolute', width: 100, height: 100, justifyContent: 'center', alignItems: 'center' }}
+            >
+              <Text style={{ fontSize: 34, textAlign: 'center', color: 'white', fontFamily: 'SwissBold' }}>
+                {type === 1 ? '50' : '100'}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <Text style={{ color: 'white', fontFamily: 'SwissLight', fontSize: 18 }}>Chúc mừng bạn nhận được</Text>
+        <Text style={{ color: 'white', fontFamily: 'SwissLight', fontSize: 18 }}>
+          Một lon {randomText === 'An' ? 'Pepsi AN' : randomText === 'Lộc' ? '7Up LỘC' : 'Mirinda PHÚC'} ứng với{' '}
+          {type === 1 ? '50' : '100'} coins.
+        </Text>
+        <View style={{ width: '60%' }}>
+          <WhiteButton text='Xác nhận' onPress={() => navigation.goBack()} />
+        </View>
       </SafeAreaView>
     </LinearGradient>
   )
