@@ -4,16 +4,25 @@ import { View, StyleSheet, Text, Image } from 'react-native'
 interface propButton {
   text: string
   luotChoi: number
-  onPress: () => void,
+  onPress: () => void
   disabled: boolean
 }
 
 function RedBigButton(props: propButton, { navigation }: { navigation: any }) {
   return (
-    <View style={{ padding: 5}}>
-      <TouchableOpacity style={[styles.buttonContainer, {    backgroundColor: props.disabled? '#7A848A' : '#FC3B3B',}]} onPress={props.onPress}>
-        <Image style={[styles.redDotImage, {tintColor : props.disabled ? '#7A848A' : undefined}]} source={require('../../../assets/images/buttons/choi-ngay-red-dot.png')} />
-        <Image style={[styles.centerImage, {tintColor : props.disabled ? '#7A848A' : undefined}]} source={require('../../../assets/images/buttons/choi-ngay-bh.png')} />
+    <View style={{ padding: 5 }}>
+      <TouchableOpacity
+        style={[styles.buttonContainer, { backgroundColor: props.disabled ? '#7A848A' : '#FC3B3B' }]}
+        onPress={props.onPress}
+      >
+        <Image
+          style={[styles.redDotImage, { tintColor: props.disabled ? '#7A848A' : undefined }]}
+          source={require('../../../assets/images/buttons/choi-ngay-red-dot.png')}
+        />
+        <Image
+          style={[styles.centerImage, { tintColor: props.disabled ? '#7A848A' : undefined }]}
+          source={require('../../../assets/images/buttons/choi-ngay-bh.png')}
+        />
         <Text style={styles.buttonText}>{props.text}</Text>
         <View style={{ flexDirection: 'row', zIndex: 5 }}>
           <Text style={styles.buttonTextSmall}>Bạn còn </Text>

@@ -106,7 +106,7 @@ function LoginPage({ navigation }: { navigation: any }) {
   const handleUpdateUserData = async (id: string) => {
     const docRef = doc(db, 'data', id)
     const docSnap = await getDoc(docRef)
-    
+
     if (docSnap.exists()) {
       const temp = JSON.stringify(docSnap.data())
       const data: UserData = JSON.parse(temp)
@@ -153,14 +153,33 @@ function LoginPage({ navigation }: { navigation: any }) {
         }}
       >
         <View style={[styles.modalView]}>
-                <Text style={{fontFamily: 'SwissBold', top: 10, padding:5 ,fontSize: 23, color: '#D02027', textAlign: 'center'}}>
-                  Lỗi: 
-                </Text>
-                <Text style={{fontFamily: 'SwissLight', top: 10, padding:5 ,fontSize: 23, color: '#005082', textAlign: 'center'}}>
-                  {error}
-                </Text>
-                <View style={{width: '60%', margin: 20}}>
-                <WhiteButton text="Thử lại" onPress={() => setModalVisible(false)} disabled={false}/></View>
+          <Text
+            style={{
+              fontFamily: 'SwissBold',
+              top: 10,
+              padding: 5,
+              fontSize: 23,
+              color: '#D02027',
+              textAlign: 'center'
+            }}
+          >
+            Lỗi:
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'SwissLight',
+              top: 10,
+              padding: 5,
+              fontSize: 23,
+              color: '#005082',
+              textAlign: 'center'
+            }}
+          >
+            {error}
+          </Text>
+          <View style={{ width: '60%', margin: 20 }}>
+            <WhiteButton text='Thử lại' onPress={() => setModalVisible(false)} disabled={false} />
+          </View>
         </View>
       </Modal>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -247,7 +266,7 @@ function LoginPage({ navigation }: { navigation: any }) {
                         console.log(errorMessage)
                         setModalVisible(true)
                         let errorTemp = ''
-                        setError("Tài khoản hoặc mật khẩu không hợp lệ")
+                        setError('Tài khoản hoặc mật khẩu không hợp lệ')
                       })
                   }}
                 />

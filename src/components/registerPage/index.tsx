@@ -43,9 +43,9 @@ function RegisterPage({ navigation }: { navigation: any }) {
   }
 
   //email check
-  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i
   function isEmailValid(email: string) {
-    return emailRegex.test(email);
+    return emailRegex.test(email)
   }
   const handleSignUpAndCreateUserData = async () => {
     try {
@@ -95,11 +95,10 @@ function RegisterPage({ navigation }: { navigation: any }) {
       const errorCode = error.code
       const errorMessage = error.message
       console.log(errorCode)
-      if (errorCode === 'auth/email-already-in-use'){
-        setError("Email đã tồn tại trên hệ thống, vui lòng thay đổi!")
-      }
-      else{
-        setError("Có lỗi từ phía máy chủ, vui lòng thử lại!")
+      if (errorCode === 'auth/email-already-in-use') {
+        setError('Email đã tồn tại trên hệ thống, vui lòng thay đổi!')
+      } else {
+        setError('Có lỗi từ phía máy chủ, vui lòng thử lại!')
       }
       setModalVisible(true)
     }
@@ -115,14 +114,33 @@ function RegisterPage({ navigation }: { navigation: any }) {
         }}
       >
         <View style={[styles.modalView]}>
-                <Text style={{fontFamily: 'SwissBold', top: 10, padding:5 ,fontSize: 23, color: '#D02027', textAlign: 'center'}}>
-                  Lỗi: 
-                </Text>
-                <Text style={{fontFamily: 'SwissLight', top: 10, padding:5 ,fontSize: 23, color: '#005082', textAlign: 'center'}}>
-                  {error}
-                </Text>
-                <View style={{width: '60%', margin: 20}}>
-                <WhiteButton text="Thử lại" onPress={() => setModalVisible(false)} disabled={false}/></View>
+          <Text
+            style={{
+              fontFamily: 'SwissBold',
+              top: 10,
+              padding: 5,
+              fontSize: 23,
+              color: '#D02027',
+              textAlign: 'center'
+            }}
+          >
+            Lỗi:
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'SwissLight',
+              top: 10,
+              padding: 5,
+              fontSize: 23,
+              color: '#005082',
+              textAlign: 'center'
+            }}
+          >
+            {error}
+          </Text>
+          <View style={{ width: '60%', margin: 20 }}>
+            <WhiteButton text='Thử lại' onPress={() => setModalVisible(false)} disabled={false} />
+          </View>
         </View>
       </Modal>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -196,10 +214,12 @@ function RegisterPage({ navigation }: { navigation: any }) {
               </View>
 
               <View style={{ marginVertical: 10 }}>
-                <TextInput style={styles.input}
+                <TextInput
+                  style={styles.input}
                   placeholder='Nhập lại mật khẩu'
                   secureTextEntry={true}
-                  onChangeText={(Text) => setRePassword(Text)} />
+                  onChangeText={(Text) => setRePassword(Text)}
+                />
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <TouchableOpacity onPress={handleCheckbox}>
@@ -218,34 +238,32 @@ function RegisterPage({ navigation }: { navigation: any }) {
                 <WhiteButton
                   text='Đăng ký'
                   onPress={() => {
-                    if(email.length === 0 || password.length === 0 || rePassword.length ===0){
-                      setError("Vui lòng điền đầy đủ các trường!")
+                    if (email.length === 0 || password.length === 0 || rePassword.length === 0) {
+                      setError('Vui lòng điền đầy đủ các trường!')
                       setModalVisible(true)
-                    }else{
-                      if(!isEmailValid(email)){
-                        setError("Email không đúng định dạng, vui lòng thử lại!")
+                    } else {
+                      if (!isEmailValid(email)) {
+                        setError('Email không đúng định dạng, vui lòng thử lại!')
                         setModalVisible(true)
                       }
-                      if(!isChecked){
-                        setError("Vui lòng đồng ý với thể lệ chương trình!")
+                      if (!isChecked) {
+                        setError('Vui lòng đồng ý với thể lệ chương trình!')
                         setModalVisible(true)
                       }
-                      if(password.length < 6){
-                        setError("Mật khẩu phải có độ dài từ 6 ký tự trở lên!")
+                      if (password.length < 6) {
+                        setError('Mật khẩu phải có độ dài từ 6 ký tự trở lên!')
                         setModalVisible(true)
-                      } else{
-                        if(rePassword != password){
-                          setError("Nhập lại mật khẩu không trùng khớp, vui lòng thử lại!")
+                      } else {
+                        if (rePassword != password) {
+                          setError('Nhập lại mật khẩu không trùng khớp, vui lòng thử lại!')
                           setModalVisible(true)
                         }
                       }
-                      
                     }
-                    
-                    if (isChecked && rePassword === password && isEmailValid(email) ){
+
+                    if (isChecked && rePassword === password && isEmailValid(email)) {
                       handleSignUpAndCreateUserData()
                     }
-                    
                   }}
                   disabled={false}
                 />

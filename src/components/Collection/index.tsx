@@ -124,21 +124,21 @@ export default function Collection({ navigation }: { navigation: any }) {
         UserID: data.UserID
       })
     )
-    await setCoin(value*300)
+    await setCoin(value * 300)
     await setDoc(docRef, {
       MienPhi: data.MienPhi,
-        QuyDoi: data.QuyDoi,
-        An: data.An - value,
-        Loc: data.Loc - value,
-        Phuc: data.Phuc - value,
-        Coins: data.Coins + data.Coins + value * 300,
-        BucketHat: data.BucketHat,
-        Jacket: data.Jacket,
-        ToteBag: data.ToteBag,
-        Tumbler: data.Tumbler,
-        AirpodCase: data.AirpodCase,
-        ElectronicLunchBo: data.ElectronicLunchBo,
-        PortableSpeaker: data.PortableSpeaker,
+      QuyDoi: data.QuyDoi,
+      An: data.An - value,
+      Loc: data.Loc - value,
+      Phuc: data.Phuc - value,
+      Coins: data.Coins + data.Coins + value * 300,
+      BucketHat: data.BucketHat,
+      Jacket: data.Jacket,
+      ToteBag: data.ToteBag,
+      Tumbler: data.Tumbler,
+      AirpodCase: data.AirpodCase,
+      ElectronicLunchBo: data.ElectronicLunchBo,
+      PortableSpeaker: data.PortableSpeaker
     })
   }
   //modal
@@ -146,10 +146,7 @@ export default function Collection({ navigation }: { navigation: any }) {
 
   const [index, setIndex] = useState(0)
 
-
   const position = React.useRef(new Animated.Value(0)).current
-
-
 
   return (
     <LinearGradient
@@ -291,7 +288,6 @@ export default function Collection({ navigation }: { navigation: any }) {
             text='Đổi ngay'
             onPress={() => {
               setModalVisible(true)
-              
             }}
           />
         </View>
@@ -309,46 +305,56 @@ export default function Collection({ navigation }: { navigation: any }) {
           >
             <View style={{ opacity: 1 }}>
               <View>
-              <Image source={unbox ? require('../../../assets/images/qr_collection_gift/gift_coin.png') : require('../../../assets/images/qr_collection_gift/giftBoxUnboxed.png')} />
+                <Image
+                  source={
+                    unbox
+                      ? require('../../../assets/images/qr_collection_gift/gift_coin.png')
+                      : require('../../../assets/images/qr_collection_gift/giftBoxUnboxed.png')
+                  }
+                />
 
-              <View style={{ flexDirection: 'column', opacity: 1, alignSelf: 'center' }}>
-
-              {unbox ? <>
-              <View style={{margin: 20}}>
-                <Text style={{textAlign: 'center', color: 'white', fontFamily: 'SwissLight', fontSize: 18 }}>Bạn nhận được</Text>
-                <Text style={{textAlign: 'center', color: '#FFDD00', fontFamily: 'SwissBold', fontSize: 18}}>{coin} coins</Text>
-              </View>
-              </>
-              : <>
-              <Text style={{ textAlign: 'center', color: 'white', fontFamily: 'SwissLight' }}>
-                  Bạn có chắc chắn muốn đổi
-                </Text>
-                <Text style={{ textAlign: 'center', color: 'white', fontFamily: 'SwissLight' }}>
-                  {value} combo hay không?
-                </Text>
-                <View style={{ width: '100%', alignSelf: 'center' }}>
-                  <RedButtonNo
-                    text='Đổi ngay'
-                    onPress={() => {
-                      if (value > 0) {
-                        setUnbox(true)
-                        exchangeButton(value)
-                      }
-                    }}
-                  />
-
-                  
+                <View style={{ flexDirection: 'column', opacity: 1, alignSelf: 'center' }}>
+                  {unbox ? (
+                    <>
+                      <View style={{ margin: 20 }}>
+                        <Text style={{ textAlign: 'center', color: 'white', fontFamily: 'SwissLight', fontSize: 18 }}>
+                          Bạn nhận được
+                        </Text>
+                        <Text style={{ textAlign: 'center', color: '#FFDD00', fontFamily: 'SwissBold', fontSize: 18 }}>
+                          {coin} coins
+                        </Text>
+                      </View>
+                    </>
+                  ) : (
+                    <>
+                      <Text style={{ textAlign: 'center', color: 'white', fontFamily: 'SwissLight' }}>
+                        Bạn có chắc chắn muốn đổi
+                      </Text>
+                      <Text style={{ textAlign: 'center', color: 'white', fontFamily: 'SwissLight' }}>
+                        {value} combo hay không?
+                      </Text>
+                      <View style={{ width: '100%', alignSelf: 'center' }}>
+                        <RedButtonNo
+                          text='Đổi ngay'
+                          onPress={() => {
+                            if (value > 0) {
+                              setUnbox(true)
+                              exchangeButton(value)
+                            }
+                          }}
+                        />
+                      </View>
+                    </>
+                  )}
                 </View>
-              </>}
-                </View>
-
 
                 <Pressable
                   onPress={() => {
-                    if(unbox){
+                    if (unbox) {
                       setUnbox(false)
                     }
-                    setModalVisible(false)}}
+                    setModalVisible(false)
+                  }}
                   style={{
                     borderRadius: 50,
                     width: 25,

@@ -337,21 +337,22 @@ export default function DoiQua() {
                 onChangeText={(text) => {
                   setAddress(text)
                   let temp = text.trim()
-                  if(!temp){
+                  if (!temp) {
                     setVerifyAdress(false)
-                  }
-                  else{
+                  } else {
                     setVerifyAdress(true)
                   }
                 }}
                 textAlignVertical='top'
                 multiline={true}
                 numberOfLines={3}
-                style={[styles.input, {borderWidth: 1, borderColor: verifyAddress? 'transparent': '#D02027'}]}
+                style={[styles.input, { borderWidth: 1, borderColor: verifyAddress ? 'transparent' : '#D02027' }]}
                 placeholder='Nhập địa chỉ của bạn'
               ></TextInput>
 
-              <Text style={{color:'#D02027', fontFamily: 'SwissLight'}}>{verifyAddress ? '' : 'Vui lòng nhập địa chỉ của bạn'}</Text>
+              <Text style={{ color: '#D02027', fontFamily: 'SwissLight' }}>
+                {verifyAddress ? '' : 'Vui lòng nhập địa chỉ của bạn'}
+              </Text>
             </View>
 
             <View style={{ paddingBottom: 20 }}>

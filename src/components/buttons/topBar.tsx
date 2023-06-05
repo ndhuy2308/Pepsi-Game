@@ -1,5 +1,5 @@
 import { Entypo } from '@expo/vector-icons'
-import {useState} from 'react'
+import { useState } from 'react'
 import { MaterialIcons } from '@expo/vector-icons'
 import { View, Text, Pressable, Image, Modal, StyleSheet } from 'react-native'
 import { getAuth, signOut } from 'firebase/auth'
@@ -35,11 +35,7 @@ export default function TopBar(props: propTopBar) {
         </Pressable>
       )}
       <Text style={{ fontFamily: 'SwissBold', fontSize: 24, color: 'white' }}>{props.pageTitle}</Text>
-      <Pressable
-        onPress={() =>
-          setModalVisible(true)
-        }
-      >
+      <Pressable onPress={() => setModalVisible(true)}>
         <MaterialIcons name='logout' size={24} color='white' />
       </Pressable>
       <Modal
@@ -51,16 +47,32 @@ export default function TopBar(props: propTopBar) {
         }}
       >
         <View style={styles.modalView}>
-                <Text style={{fontFamily: 'SwissLight', top: 10, padding:5 ,fontSize: 23, color: '#0063A7', textAlign: 'center'}}>
-                  Bạn có chắc chắn muốn 
-                </Text>
-                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-                <Text style={{fontFamily: 'SwissBold', fontSize: 23, color: '#0063A7', textAlign: 'center'}}>đăng xuất</Text>
-                <Text style={{fontFamily: 'SwissLight',fontSize: 23, color: '#0063A7', textAlign: 'center'}}> không?</Text>
-                </View>
-                <View style={{width: '60%'}}>
-                <RedButtonNo text='Đăng xuất' onPress={() =>{
-                  signOut(auth)
+          <Text
+            style={{
+              fontFamily: 'SwissLight',
+              top: 10,
+              padding: 5,
+              fontSize: 23,
+              color: '#0063A7',
+              textAlign: 'center'
+            }}
+          >
+            Bạn có chắc chắn muốn
+          </Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+            <Text style={{ fontFamily: 'SwissBold', fontSize: 23, color: '#0063A7', textAlign: 'center' }}>
+              đăng xuất
+            </Text>
+            <Text style={{ fontFamily: 'SwissLight', fontSize: 23, color: '#0063A7', textAlign: 'center' }}>
+              {' '}
+              không?
+            </Text>
+          </View>
+          <View style={{ width: '60%' }}>
+            <RedButtonNo
+              text='Đăng xuất'
+              onPress={() => {
+                signOut(auth)
                   .then(() => {
                     console.log('Successfully signed out.')
                     // Navigate to the logged-out screen
@@ -68,18 +80,16 @@ export default function TopBar(props: propTopBar) {
                   .catch((error: any) => {
                     console.error(error)
                   })
-                  setModalVisible(false)
-                }
-          
-            
-        } />
-                <WhiteButton text="Huỷ" onPress={() => setModalVisible(false)} disabled={false}/></View>
+                setModalVisible(false)
+              }}
+            />
+            <WhiteButton text='Huỷ' onPress={() => setModalVisible(false)} disabled={false} />
+          </View>
         </View>
       </Modal>
     </View>
   )
 }
-
 
 const styles = StyleSheet.create({
   modalView: {
