@@ -6,12 +6,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import firebaseapp from '../../FirebaseConfig'
 import { RootState } from '../../store/rootReducer'
 import { UserData, updateData } from '../../store/userDataSlice'
-
-import { initializeFirestore, setDoc, doc, collection } from 'firebase/firestore'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { initializeFirestore, setDoc, doc, getDoc, collection } from 'firebase/firestore'
 import WhiteButton from '../buttons/white_button'
 import { Modal } from 'react-native'
 import RedBigButton from '../buttons/red_big_button'
 import { Pressable } from 'react-native'
+import RedButtonNo from '../buttons/red_button_no'
+import RedButton from '../buttons/red_button'
+import TopBar from '../buttons/topBar'
 
 export default function Collection({ navigation }: { navigation: any }) {
   const data: UserData = useSelector((state: RootState) => state.userData.data)
@@ -21,6 +24,22 @@ export default function Collection({ navigation }: { navigation: any }) {
 
   const docRef = doc(collection(db, 'data'), data.UserID)
   const dispatch = useDispatch()
+  useEffect(() => {
+    const fetchData = async () => {
+      const docSnap = await getDoc(docRef)
+
+      if (docSnap.exists()) {
+        const temp = JSON.stringify(docSnap.data())
+        const data = JSON.parse(temp)
+        console.log(data)
+      } else {
+        // docSnap.data() will be undefined in this case
+        console.log('No such document!')
+      }
+    }
+    fetchData().catch(console.error)
+  }, [])
+
   const minValue = Math.min(data.An, data.Phuc, data.Loc)
   const [value, setValue] = useState<number>(minValue > 0 ? 1 : 0)
   useEffect(() => {
@@ -123,6 +142,64 @@ export default function Collection({ navigation }: { navigation: any }) {
   }
   //modal
   const [modalVisible, setModalVisible] = useState<boolean>(false)
+  const image1 = require('../../../assets/images/gameplay/an.png')
+  const image2 = require('../../../assets/images/gameplay/loc.png')
+  const image3 = require('../../../assets/images/gameplay/phuc.png')
+  const resultQuantity = 3
+  // Use state hooks to store the current image index
+  const [index, setIndex] = useState(0)
+
+  // Use a ref hook to store the animated value for the horizontal position of the image slider
+  const position = React.useRef(new Animated.Value(0)).current
+
+  // Define a function that increments the index by one, or resets it to zero if it reaches the end of the array
+  const nextImage = () => {
+    if (index < resultQuantity - 1) {
+      // Animate the position to the left by one screen width
+      Animated.timing(position, {
+        // Use as any to cast position to any type
+        toValue: (position as any)._value - 300,
+        duration: 500,
+        useNativeDriver: true
+      }).start()
+      // Update the index state
+      setIndex(index + 1)
+    } else {
+      // Animate the position back to the start
+      Animated.timing(position, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true
+      }).start()
+      // Reset the index state
+      setIndex(0)
+    }
+    console.log(index)
+  }
+
+  // Define a function that decrements the index by one, or sets it to the last element of the array if it reaches the beginning
+  const prevImage = () => {
+    if (index > 0) {
+      // Animate the position to the right by one screen width
+      Animated.timing(position, {
+        toValue: (position as any)._value + 300,
+        duration: 500,
+        useNativeDriver: true
+      }).start()
+      // Update the index state
+      setIndex(index - 1)
+    } else {
+      // Animate the position to the end
+      Animated.timing(position, {
+        toValue: -300 * (resultQuantity - 1),
+        duration: 500,
+        useNativeDriver: true
+      }).start()
+      // Set the index state to the last element
+      setIndex(resultQuantity - 1)
+    }
+    console.log(index)
+  }
 
   return (
     <LinearGradient
@@ -164,7 +241,8 @@ export default function Collection({ navigation }: { navigation: any }) {
         style={{ position: 'absolute', bottom: 0, right: 0 }}
       />
 
-      <View style={{ flex: 1, justifyContent: 'center' }}>
+      <SafeAreaView style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <TopBar pageTitle='Bộ sưu tập' isHomePage={false} />
         <View style={{ alignItems: 'center' }}>
           <Image
             style={{ width: 100, height: 100 }}
@@ -221,8 +299,7 @@ export default function Collection({ navigation }: { navigation: any }) {
                 }}
               >
                 <Text style={{ color: 'white', textAlign: 'center', fontFamily: 'SwissBold', fontSize: 16, top: -2 }}>
-                  {' '}
-                  -{' '}
+                  -
                 </Text>
               </View>
             </TouchableOpacity>
@@ -253,22 +330,21 @@ export default function Collection({ navigation }: { navigation: any }) {
                 }}
               >
                 <Text style={{ color: 'white', textAlign: 'center', fontFamily: 'SwissBold', fontSize: 16, top: -2 }}>
-                  {' '}
-                  +{' '}
+                  +
                 </Text>
               </View>
             </TouchableOpacity>
           </View>
         </View>
-        <WhiteButton
-          text='Đổi ngay'
-          onPress={() => {
-            setModalVisible(true)
-            if (value > 0) {
-              exchangeButton(value)
-            }
-          }}
-        />
+        <View style={{ width: '60%' }}>
+          <RedButton
+            text='Đổi ngay'
+            onPress={() => {
+              setModalVisible(true)
+              nextImage()
+            }}
+          />
+        </View>
 
         <Modal
           animationType='slide'
@@ -282,6 +358,21 @@ export default function Collection({ navigation }: { navigation: any }) {
             style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.8)', justifyContent: 'center', alignItems: 'center' }}
           >
             <View style={{ opacity: 1 }}>
+              <View>
+                {/* Display an animated view that contains all the images */}
+                <Animated.View style={{ flexDirection: 'row', transform: [{ translateX: position }] }}></Animated.View>
+
+                {/* Display a button that goes to the previous image */}
+                <TouchableOpacity onPress={prevImage}>
+                  <Text>Back</Text>
+                </TouchableOpacity>
+
+                {/* Display a button that goes to the next image */}
+                <TouchableOpacity onPress={nextImage}>
+                  <Text>Next</Text>
+                </TouchableOpacity>
+              </View>
+
               <Image source={require('../../../assets/images/qr_collection_gift/giftBoxUnboxed.png')} />
               <View style={{ flexDirection: 'column', opacity: 1, alignSelf: 'center' }}>
                 <Text style={{ textAlign: 'center', color: 'white', fontFamily: 'SwissLight' }}>
@@ -290,6 +381,16 @@ export default function Collection({ navigation }: { navigation: any }) {
                 <Text style={{ textAlign: 'center', color: 'white', fontFamily: 'SwissLight' }}>
                   {value} combo hay không?
                 </Text>
+                <View style={{ width: '100%', alignSelf: 'center' }}>
+                  <RedButtonNo
+                    text='Đổi ngay'
+                    onPress={() => {
+                      if (value > 0) {
+                        exchangeButton(value)
+                      }
+                    }}
+                  />
+                </View>
                 <Pressable
                   onPress={() => setModalVisible(false)}
                   style={{
@@ -309,14 +410,13 @@ export default function Collection({ navigation }: { navigation: any }) {
             </View>
           </View>
         </Modal>
-      </View>
+      </SafeAreaView>
     </LinearGradient>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center'
+    flex: 1
   }
 })

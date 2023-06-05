@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useRef } from 'react'
-import { StyleSheet, View, Image, Animated, PanResponder, Text } from 'react-native'
+import React, { useState } from 'react'
+import { StyleSheet, View, Image, Animated, Modal, Text } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useDispatch, useSelector } from 'react-redux'
 import firebaseapp from '../../FirebaseConfig'
@@ -8,6 +8,10 @@ import { RootState } from '../../store/rootReducer'
 import { UserData, updateData } from '../../store/userDataSlice'
 import WhiteButton from '../buttons/white_button'
 import { initializeFirestore, setDoc, doc, collection } from 'firebase/firestore'
+import TopBar from '../buttons/topBar'
+import RedButton from '../buttons/red_button'
+import RedButtonNo from '../buttons/red_button_no'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function QrPage({ navigation }: { navigation: any }) {
   const data: UserData = useSelector((state: RootState) => state.userData.data)
@@ -16,10 +20,11 @@ export default function QrPage({ navigation }: { navigation: any }) {
   })
   const docRef = doc(collection(db, 'data'), data.UserID)
   const dispatch = useDispatch()
-
+  const [modalVisible, setModalVisible] = useState(false)
+  const [value, setValue] = useState<number>(0)
   const doUpdate = async () => {
     const randomValue = Math.random() < 0.5 ? 1 : 2
-    console.log(randomValue === 1 ? '5 lượt' : 'Failed')
+    setValue(randomValue)
     dispatch(
       updateData({
         MienPhi: data.MienPhi,
@@ -96,22 +101,101 @@ export default function QrPage({ navigation }: { navigation: any }) {
         style={{ position: 'absolute', bottom: 0, right: 0 }}
       />
 
-      <Image source={require('../../../assets/images/qr.png')}></Image>
-      <View style={{ width: '60%' }}>
-        <WhiteButton text='Quét mã' onPress={() => doUpdate()} />
-      </View>
+      <SafeAreaView style={{ alignContent: 'center', alignItems: 'center', justifyContent: 'center' }}>
+        <TopBar pageTitle='Quét mã' isHomePage={false} />
+        <Image style={{ alignSelf: 'center' }} source={require('../../../assets/images/qr.png')}></Image>
+        <View style={{ width: '60%' }}>
+          <RedButton
+            text='Quét mã'
+            onPress={() => {
+              doUpdate()
+              setModalVisible(true)
+            }}
+          />
+        </View>
+      </SafeAreaView>
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible)
+        }}
+      >
+        <View style={styles.modalView}>
+          {value === 1 ? ( // đúng (random 5 lượt)
+            <>
+              <Image
+                style={{ position: 'absolute', top: -50 }}
+                source={require('../../../assets/images/qr_collection_gift/gift_qr_success.png')}
+              />
+              <Text style={{ color: 'black', fontFamily: 'SwissLight', fontSize: 24, top: 30, padding: 50 }}>
+                Bạn nhận được
+              </Text>
+              <Text style={{ color: '#005082', fontFamily: 'SwissBold', fontSize: 72 }}>5</Text>
+              <Text style={{ color: 'black', fontFamily: 'SwissLight', fontSize: 24, paddingBottom: 50 }}>
+                lượt chơi
+              </Text>
+              <View style={{ flexDirection: 'row' }}>
+                <Text style={{ color: 'black', fontFamily: 'SwissLight', fontSize: 22 }}>Bạn đang có</Text>
+                <Text style={{ color: '#005082', fontFamily: 'SwissBold', fontSize: 25, top: -3 }}>
+                  {' '}
+                  {data.MienPhi + data.QuyDoi}{' '}
+                </Text>
+                <Text style={{ color: 'black', fontFamily: 'SwissLight', fontSize: 22 }}>lượt chơi</Text>
+              </View>
+              <View style={{ justifyContent: 'center' }}>
+                <RedButtonNo text='Scan tiếp' onPress={() => setModalVisible(false)} />
+                <RedButtonNo text='Chơi ngay' onPress={() => navigation.navigate('Home')} />
+              </View>
+            </>
+          ) : (
+            // sai
+            <>
+              <View style={{ width: '90%', justifyContent: 'center', padding: 30 }}>
+                <Text
+                  style={{
+                    color: '#D02027',
+                    fontFamily: 'SwissBold',
+                    fontSize: 24,
+                    textAlign: 'center',
+                    lineHeight: 28
+                  }}
+                >
+                  Hệ thống không nhận diện được hình ảnh!
+                </Text>
+                <RedButtonNo text='Scan lại' onPress={() => setModalVisible(false)} />
+              </View>
+            </>
+          )}
+        </View>
+      </Modal>
     </LinearGradient>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
+    flex: 1
   },
   box: {
     width: '100%',
     height: '100%'
+  },
+  modalView: {
+    top: '20%',
+    alignSelf: 'center',
+    backgroundColor: '#FBD239',
+    borderRadius: 20,
+    width: '70%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
   }
 })

@@ -135,7 +135,7 @@ function Result({ navigation, route }: ResultScreenProps) {
           {type === 1 ? '50' : '100'} coins.
         </Text>
         <View style={{ width: '60%' }}>
-          <WhiteButton text='Xác nhận' onPress={() => navigation.goBack()} />
+          <WhiteButton text='Xác nhận' onPress={() => navigation.navigate('Home')} disabled={false} />
         </View>
       </SafeAreaView>
     </LinearGradient>

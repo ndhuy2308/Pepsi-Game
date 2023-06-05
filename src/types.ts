@@ -7,4 +7,5 @@ export type RootStackParamList = {
   QrPage: undefined
   Collection: undefined
   GiftPage: undefined
+  ImageSlider: undefined
 }

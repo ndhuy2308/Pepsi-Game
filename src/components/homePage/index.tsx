@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar'
-import { StyleSheet, Text, View, Image, SafeAreaView, TouchableOpacity, Modal } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Modal, Dimensions } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import WhiteButton from '../buttons/white_button'
 import { useDispatch, useSelector } from 'react-redux'
@@ -10,22 +10,26 @@ import firebaseapp from '../../FirebaseConfig'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { doc, collection, initializeFirestore, setDoc } from 'firebase/firestore'
 import { RootStackParamList } from '../../types'
+import { getAuth, signOut } from 'firebase/auth'
 import RedBigButton from '../buttons/red_big_button'
+import TopBar from '../buttons/topBar'
+import { SafeAreaView } from 'react-native-safe-area-context'
 type HomeScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Home'>
 }
 export default function HomePage({ navigation }: { navigation: any }) {
   const data: UserData = useSelector((state: RootState) => state.userData.data)
+  console.log('User id: ', data.UserID)
   const [modalVisible, setModalVisible] = useState(false) // cho modal
+  const auth = getAuth()
   const dispatch = useDispatch()
-
+  const windowWidth = Dimensions.get('window').width
+  const imageWidth = windowWidth * 0.4
   //db
   const db = initializeFirestore(firebaseapp, {
     experimentalForceLongPolling: true
   })
-  const docRef = doc(collection(db, 'data'), data.UserID)
 
-  //xử lí dữ liệu chơi game
   const MienPhi = data.MienPhi
   const QuyDoi = data.QuyDoi
 
@@ -50,6 +54,27 @@ export default function HomePage({ navigation }: { navigation: any }) {
         }}
       >
         <View style={styles.modalView}>
+          <TouchableOpacity
+            style={{
+              position: 'absolute',
+              top: 10,
+              right: 10,
+              width: 30,
+              height: 30,
+              borderRadius: 15,
+              backgroundColor: '#D02027',
+              borderWidth: 2,
+              borderColor: '#FEEEA4',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 55
+            }}
+            onPress={() => {
+              setModalVisible(false) // đóng modal
+            }}
+          >
+            <Text style={{ color: 'white', fontSize: 17, top: -2 }}>x</Text>
+          </TouchableOpacity>
           <Image
             source={require('../../../assets/images/gameplay/popup_choi_top_left.png')}
             style={{ position: 'absolute', top: 0, left: 0 }}
@@ -74,6 +99,7 @@ export default function HomePage({ navigation }: { navigation: any }) {
               luotChoi={data.MienPhi}
               onPress={() => {
                 Play(1)
+                setModalVisible(!modalVisible)
               }}
             ></RedBigButton>
             <RedBigButton
@@ -81,6 +107,7 @@ export default function HomePage({ navigation }: { navigation: any }) {
               luotChoi={data.QuyDoi}
               onPress={() => {
                 Play(2)
+                setModalVisible(!modalVisible)
               }}
             ></RedBigButton>
           </View>
@@ -120,7 +147,9 @@ export default function HomePage({ navigation }: { navigation: any }) {
       >
         <Image source={require('../../../assets/images/homepage/trong.png')} />
       </View>
-      <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', zIndex: 3 }}>
+
+      <SafeAreaView style={{ justifyContent: 'center', alignItems: 'center', zIndex: 3 }}>
+        <TopBar pageTitle='' isHomePage={true} />
         <View>
           <Image source={require('../../../assets/images/homepage/ca.png')} />
 
@@ -147,6 +176,7 @@ export default function HomePage({ navigation }: { navigation: any }) {
             onPress={() => {
               navigation.navigate('QrPage')
             }}
+            disabled={false}
           />
 
           <WhiteButton
@@ -154,12 +184,14 @@ export default function HomePage({ navigation }: { navigation: any }) {
             onPress={() => {
               navigation.navigate('Collection')
             }}
+            disabled={false}
           />
           <WhiteButton
             text='Chi tiết quà tặng'
             onPress={() => {
               navigation.navigate('GiftPage')
             }}
+            disabled={false}
           />
         </View>
       </SafeAreaView>
@@ -236,6 +268,7 @@ const styles = StyleSheet.create({
     zIndex: 5
   },
   modalView: {
+    top: '20%',
     alignSelf: 'center',
     backgroundColor: '#FBD239',
     borderRadius: 20,
