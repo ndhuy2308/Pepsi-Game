@@ -9,7 +9,8 @@ import {
   SafeAreaView,
   Pressable,
   Dimensions,
-  Keyboard
+  Keyboard,
+  Modal
 } from 'react-native'
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import { useEffect, useState } from 'react'
@@ -26,17 +27,25 @@ const textInputWidth = windowWidth * 0.9
 function RegisterPage({ navigation }: { navigation: any }) {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState('')
+  const [rePassword, setRePassword] = useState('')
   const auth = getAuth(firebaseapp)
   //checkbox
   const [isChecked, setisChecked] = useState(false)
   const [imageSource, setImageSource] = useState(require('../../../assets/images/notChecked.png'))
-
+  const [modalVisible, setModalVisible] = useState(false) // cho modal error form
+  const [error, setError] = useState('')
   const dispatch = useDispatch()
   const handleCheckbox = () => {
     setisChecked(!isChecked)
     setImageSource(
       !isChecked ? require('../../../assets/images/checked.png') : require('../../../assets/images/notChecked.png')
     )
+  }
+
+  //email check
+  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+  function isEmailValid(email: string) {
+    return emailRegex.test(email);
   }
   const handleSignUpAndCreateUserData = async () => {
     try {
@@ -85,11 +94,37 @@ function RegisterPage({ navigation }: { navigation: any }) {
     } catch (error: any) {
       const errorCode = error.code
       const errorMessage = error.message
-      console.error('Error creating user: ', errorMessage)
+      console.log(errorCode)
+      if (errorCode === 'auth/email-already-in-use'){
+        setError("Email đã tồn tại trên hệ thống, vui lòng thay đổi!")
+      }
+      else{
+        setError("Có lỗi từ phía máy chủ, vui lòng thử lại!")
+      }
+      setModalVisible(true)
     }
   }
   return (
     <View style={{ flex: 1 }}>
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible)
+        }}
+      >
+        <View style={[styles.modalView]}>
+                <Text style={{fontFamily: 'SwissBold', top: 10, padding:5 ,fontSize: 23, color: '#D02027', textAlign: 'center'}}>
+                  Lỗi: 
+                </Text>
+                <Text style={{fontFamily: 'SwissLight', top: 10, padding:5 ,fontSize: 23, color: '#005082', textAlign: 'center'}}>
+                  {error}
+                </Text>
+                <View style={{width: '60%', margin: 20}}>
+                <WhiteButton text="Thử lại" onPress={() => setModalVisible(false)} disabled={false}/></View>
+        </View>
+      </Modal>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <LinearGradient
           colors={['#02A7F0', '#0063A7']}
@@ -161,7 +196,10 @@ function RegisterPage({ navigation }: { navigation: any }) {
               </View>
 
               <View style={{ marginVertical: 10 }}>
-                <TextInput style={[styles.input]} placeholder='Nhập lại mật khẩu' />
+                <TextInput style={styles.input}
+                  placeholder='Nhập lại mật khẩu'
+                  secureTextEntry={true}
+                  onChangeText={(Text) => setRePassword(Text)} />
               </View>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <TouchableOpacity onPress={handleCheckbox}>
@@ -180,8 +218,34 @@ function RegisterPage({ navigation }: { navigation: any }) {
                 <WhiteButton
                   text='Đăng ký'
                   onPress={() => {
-                    handleSignUpAndCreateUserData()
-                    navigation.navigate('LoginPage')
+                    if(email.length === 0 || password.length === 0 || rePassword.length ===0){
+                      setError("Vui lòng điền đầy đủ các trường!")
+                      setModalVisible(true)
+                    }else{
+                      if(!isEmailValid(email)){
+                        setError("Email không đúng định dạng, vui lòng thử lại!")
+                        setModalVisible(true)
+                      }
+                      if(!isChecked){
+                        setError("Vui lòng đồng ý với thể lệ chương trình!")
+                        setModalVisible(true)
+                      }
+                      if(password.length < 6){
+                        setError("Mật khẩu phải có độ dài từ 6 ký tự trở lên!")
+                        setModalVisible(true)
+                      } else{
+                        if(rePassword != password){
+                          setError("Nhập lại mật khẩu không trùng khớp, vui lòng thử lại!")
+                          setModalVisible(true)
+                        }
+                      }
+                      
+                    }
+                    
+                    if (isChecked && rePassword === password && isEmailValid(email) ){
+                      handleSignUpAndCreateUserData()
+                    }
+                    
                   }}
                   disabled={false}
                 />
@@ -210,6 +274,22 @@ const styles = StyleSheet.create({
     top: '33.33%',
     bottom: '30.81%',
     backgroundColor: 'white'
+  },
+  modalView: {
+    top: '20%',
+    alignSelf: 'center',
+    backgroundColor: '#FBD239',
+    borderRadius: 20,
+    width: '70%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
   }
 })
 

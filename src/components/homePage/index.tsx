@@ -14,6 +14,7 @@ import { getAuth, signOut } from 'firebase/auth'
 import RedBigButton from '../buttons/red_big_button'
 import TopBar from '../buttons/topBar'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import RedButtonNo from '../buttons/red_button_no'
 type HomeScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Home'>
 }
@@ -21,6 +22,7 @@ export default function HomePage({ navigation }: { navigation: any }) {
   const data: UserData = useSelector((state: RootState) => state.userData.data)
   console.log('User id: ', data.UserID)
   const [modalVisible, setModalVisible] = useState(false) // cho modal
+  const [modalVisibleQR, setModalVisibleQR] = useState(false) // cho modal
   const auth = getAuth()
   const dispatch = useDispatch()
   const windowWidth = Dimensions.get('window').width
@@ -45,6 +47,32 @@ export default function HomePage({ navigation }: { navigation: any }) {
       end={{ x: 1, y: 0.5 }}
       style={{ flex: 1 }}
     >
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={modalVisibleQR}
+        onRequestClose={() => {
+          setModalVisible(!modalVisibleQR)
+        }}
+      >
+        <View style={[styles.modalView, {backgroundColor: '#0063A7'}]}>
+                <Text style={{fontFamily: 'SwissLight', top: 10, padding:5 ,fontSize: 23, color: '#0063A7', textAlign: 'center'}}>
+                  Bạn có chắc chắn muốn 
+                </Text>
+                <View style={{margin: 20, alignItems: 'center'}}>
+                <Text style={{color: '#FFDD00', fontSize: 22, fontFamily: 'SwissBold'}}>BẠN ĐÃ HẾT LƯỢT!</Text>
+                <Text style={{textAlign: 'center', fontFamily: 'SwissLight', color:'white', fontSize: 18}}>Hãy scan thêm mã trên bill 
+mua nước hoặc combo Pepsi rạp
+để nhận thêm lượt chơi</Text>
+</View>
+                <View style={{width: '60%'}}>
+               
+                <RedButtonNo text='Scan ngay' onPress={() => { 
+                  setModalVisibleQR(false) 
+                  navigation.navigate('QrPage') }} />
+        </View>
+        </View>
+      </Modal>
       <Modal
         animationType='slide'
         transparent={true}
@@ -98,17 +126,26 @@ export default function HomePage({ navigation }: { navigation: any }) {
               text='Chơi miễn phí'
               luotChoi={data.MienPhi}
               onPress={() => {
-                Play(1)
+                if(data.MienPhi >0){
+                  Play(1)
+
                 setModalVisible(!modalVisible)
+                }
+                
               }}
+              disabled = {data.MienPhi > 0 ? false : true}
             ></RedBigButton>
             <RedBigButton
               text='Chơi quy đổi'
               luotChoi={data.QuyDoi}
               onPress={() => {
-                Play(2)
+                if(data.QuyDoi > 0){
+                  Play(2)
                 setModalVisible(!modalVisible)
+                }
+                
               }}
+              disabled = {data.QuyDoi > 0 ? false : true}
             ></RedBigButton>
           </View>
         </View>
@@ -158,7 +195,20 @@ export default function HomePage({ navigation }: { navigation: any }) {
           </Text>
 
           <View style={{ padding: 5 }}>
-            <TouchableOpacity style={styles.buttonContainer} onPress={() => setModalVisible(!modalVisible)}>
+            <TouchableOpacity style={styles.buttonContainer} 
+            onPress={() => {
+              if(data.MienPhi + data.QuyDoi > 0){
+                setModalVisible(true)
+              }
+              else {
+                setModalVisibleQR(true)
+              }
+              }
+            }
+            
+            
+            
+            >
               <Image style={styles.bottomImage} source={require('../../../assets/images/buttons/cn-duoi.png')} />
               <Image style={styles.topImage} source={require('../../../assets/images/buttons/cn-tren.png')} />
               <Image

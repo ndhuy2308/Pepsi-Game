@@ -13,7 +13,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
-  Keyboard
+  Keyboard,
+  Modal
 } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { useCallback, useState, useEffect, useContext } from 'react'
@@ -51,7 +52,8 @@ function LoginPage({ navigation }: { navigation: any }) {
     experimentalForceLongPolling: true
   })
   const [didDispatch, setDidDispatch] = useState(false)
-
+  const [modalVisible, setModalVisible] = useState(false) // cho modal error form
+  const [error, setError] = useState('')
   // useEffect(() => {
   //   // Define an async function to fetch data from firestore
   //   const getImage = async () => {
@@ -104,7 +106,7 @@ function LoginPage({ navigation }: { navigation: any }) {
   const handleUpdateUserData = async (id: string) => {
     const docRef = doc(db, 'data', id)
     const docSnap = await getDoc(docRef)
-
+    
     if (docSnap.exists()) {
       const temp = JSON.stringify(docSnap.data())
       const data: UserData = JSON.parse(temp)
@@ -142,6 +144,25 @@ function LoginPage({ navigation }: { navigation: any }) {
 
   return (
     <View style={{ flex: 1 }}>
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible)
+        }}
+      >
+        <View style={[styles.modalView]}>
+                <Text style={{fontFamily: 'SwissBold', top: 10, padding:5 ,fontSize: 23, color: '#D02027', textAlign: 'center'}}>
+                  Lỗi: 
+                </Text>
+                <Text style={{fontFamily: 'SwissLight', top: 10, padding:5 ,fontSize: 23, color: '#005082', textAlign: 'center'}}>
+                  {error}
+                </Text>
+                <View style={{width: '60%', margin: 20}}>
+                <WhiteButton text="Thử lại" onPress={() => setModalVisible(false)} disabled={false}/></View>
+        </View>
+      </Modal>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <LinearGradient
           colors={['#02A7F0', '#0063A7']}
@@ -224,6 +245,9 @@ function LoginPage({ navigation }: { navigation: any }) {
                         const errorCode = error.code
                         const errorMessage = error.message
                         console.log(errorMessage)
+                        setModalVisible(true)
+                        let errorTemp = ''
+                        setError("Tài khoản hoặc mật khẩu không hợp lệ")
                       })
                   }}
                 />
@@ -255,13 +279,23 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: textInputWidth,
     alignSelf: 'center'
+  },
+  modalView: {
+    top: '20%',
+    alignSelf: 'center',
+    backgroundColor: '#FBD239',
+    borderRadius: 20,
+    width: '70%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
   }
-  // fontSL: {
-  //   fontFamily: 'SwissLight',
-  // },
-  // fontSB: {
-  //   fontFamily: 'SwissBold'
-  // }
 })
 
 export default LoginPage

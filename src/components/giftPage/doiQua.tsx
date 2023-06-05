@@ -49,7 +49,6 @@ export default function DoiQua() {
   const { width, height } = Dimensions.get('window')
   const windowWidth = Dimensions.get('window').width
   const [imageSource, setImageSource] = useState<Doc[]>([])
-
   // cho modal
   const [modalVisible, setModalVisible] = useState(false)
   const [title, setTitle] = useState<string>('')
@@ -61,6 +60,7 @@ export default function DoiQua() {
   const [in_Name, setInName] = useState('')
   const [in_PhoneNumber, setInPhoneNumber] = useState('')
   const [address, setAddress] = useState('')
+  const [verifyAddress, setVerifyAdress] = useState(false)
   const [note, setNote] = useState('')
 
   //
@@ -233,6 +233,7 @@ export default function DoiQua() {
                   setCost(item.cost)
                   setQuantity(item.quantity)
                   setModalVisible(true)
+                  setVerifyAdress(true)
                 }}
                 text='Đổi quà'
                 disabled={data.Coins < item.cost ? true : false}
@@ -324,6 +325,7 @@ export default function DoiQua() {
               <Text style={{ color: '#005082', fontSize: 16, fontFamily: 'SwissBold' }}>Số điện thoại</Text>
               <TextInput
                 style={styles.input}
+                keyboardType='numeric'
                 placeholder='Nhập số điện thoại của bạn'
                 onChangeText={(text) => setInPhoneNumber(text)}
               ></TextInput>
@@ -332,13 +334,24 @@ export default function DoiQua() {
             <View style={{ paddingBottom: 20 }}>
               <Text style={{ color: '#005082', fontSize: 16, fontFamily: 'SwissBold' }}>Địa chỉ</Text>
               <TextInput
-                onChangeText={(text) => setAddress(text)}
+                onChangeText={(text) => {
+                  setAddress(text)
+                  let temp = text.trim()
+                  if(!temp){
+                    setVerifyAdress(false)
+                  }
+                  else{
+                    setVerifyAdress(true)
+                  }
+                }}
                 textAlignVertical='top'
                 multiline={true}
                 numberOfLines={3}
-                style={[styles.input]}
+                style={[styles.input, {borderWidth: 1, borderColor: verifyAddress? 'transparent': '#D02027'}]}
                 placeholder='Nhập địa chỉ của bạn'
               ></TextInput>
+
+              <Text style={{color:'#D02027', fontFamily: 'SwissLight'}}>{verifyAddress ? '' : 'Vui lòng nhập địa chỉ của bạn'}</Text>
             </View>
 
             <View style={{ paddingBottom: 20 }}>

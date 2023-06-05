@@ -83,11 +83,21 @@ export default function QuaCuaToi() {
     }
 
     fetchData()
+
   }, [])
 
   return (
     <View style={{ flex: 1, width: '100%'}}>
-      <FlatList
+      {result.length === 0 ?
+        <>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Image source={require('../../../assets/images/qr_collection_gift/empty_gift.png')} />
+        <Text style={{textAlign: 'center', fontFamily:'SwissLight', color: 'white', fontSize: 18}}>Kho quà còn trống!{'\n'}
+Hãy dùng coins của bạn để đổi quà</Text>
+        </View>
+        </> :
+        <>
+        <FlatList
         columnWrapperStyle={{ justifyContent: 'space-between' }}
         numColumns={2}
         data={result}
@@ -144,6 +154,9 @@ export default function QuaCuaToi() {
 
         )}
       />
+        </>
+      }
+      
      
     </View>
   )
